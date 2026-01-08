@@ -1,6 +1,10 @@
 # FDA Human Factors Usability Report Application
 
 A web-based application for creating FDA-compliant Human Factors and Usability Engineering reports according to FDA-2011-D-0469 guidance.
+Demo: http://52.10.94.110/fda/
+
+FDA Reference Document
+FDA-2011-D-0469: [FDA-2011-D-0469: Applying Human Factors and Usability Engineering to Medical Devices](https://www.fda.gov/media/80481/download) (PDF)
 
 ## Overview
 
