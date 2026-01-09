@@ -14,4 +14,17 @@
   html {
     @apply scroll-smooth;
   }
+  /* Make boxes square instead of rounded */
+  .rounded-lg {
+    border-radius: 0 !important;
+  }
+
+  .rounded {
+    border-radius: 0 !important;
+  }
+
+  /* Or make them less rounded */
+  .rounded-lg {
+    border-radius: 0px !important;
+}
 }

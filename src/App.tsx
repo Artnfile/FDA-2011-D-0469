@@ -1,384 +1,370 @@
-import { useState, useEffect } from 'react'
-import { Save, Download, FileText, CheckCircle, AlertCircle } from 'lucide-react'
-
-const saveToStorage = (key: string, data: any) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data))
-    return true
-  } catch (e) {
-    console.error('Storage error:', e)
-    return false
-  }
-}
-
-const loadFromStorage = (key: string) => {
-  try {
-    const item = localStorage.getItem(key)
-    return item ? JSON.parse(item) : null
-  } catch (e) {
-    console.error('Load error:', e)
-    return null
-  }
-}
-
-interface Section {
-  id: number
-  title: string
-  completed: boolean
-  fields: { [key: string]: string }
-}
+// src/App.tsx
+import React, { useState, useEffect } from 'react';
+import { AppState } from './types';
+import { saveToLocalStorage, loadFromLocalStorage } from './utils/storage';
+import { Sidebar } from './components/Sidebar';
+import { Section1 } from './components/Section1';
+import { Section2 } from './components/Section2';
+import { Section3 } from './components/Section3';
+import { Section4 } from './components/Section4';
+import { Section5 } from './components/Section5';
+import { Section6 } from './components/Section6';
+import { Section7 } from './components/Section7';
+import { Section8 } from './components/Section8';
+import { Section9 } from './components/Section9';
+import { Section10 } from './components/Section10';
 
 function App() {
-  const [currentSection, setCurrentSection] = useState(1)
-  const [projectName, setProjectName] = useState('')
-  const [lastSaved, setLastSaved] = useState<string | null>(null)
-  const [sections, setSections] = useState<Section[]>([
-    { id: 1, title: 'Conclusion', completed: false, fields: {} },
-    { id: 2, title: 'Users, Uses & Environments', completed: false, fields: {} },
-    { id: 3, title: 'Device User Interface', completed: false, fields: {} },
-    { id: 4, title: 'Known Use Problems', completed: false, fields: {} },
-    { id: 5, title: 'Risk Analysis', completed: false, fields: {} },
-    { id: 6, title: 'Preliminary Analyses', completed: false, fields: {} },
-    { id: 7, title: 'Critical Tasks', completed: false, fields: {} },
-    { id: 8, title: 'Validation Testing', completed: false, fields: {} },
-    { id: 9, title: 'Documentation', completed: false, fields: {} },
-    { id: 10, title: 'Export & Review', completed: false, fields: {} },
-  ])
+  // Project info
+  const [projectName, setProjectName] = useState('');
+  const [deviceName, setDeviceName] = useState('');
+  const [currentSection, setCurrentSection] = useState(1);
+  const [completedSections, setCompletedSections] = useState<number[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Section 1: Conclusion
+  const [safetyStatement, setSafetyStatement] = useState('');
+  const [processSummary, setProcessSummary] = useState('');
+  const [residualRisk, setResidualRisk] = useState('');
+
+  // Section 2: Users, Uses & Environments
+  const [userGroups, setUserGroups] = useState<AppState['userGroups']>([]);
+  const [useEnvironments, setUseEnvironments] = useState<AppState['useEnvironments']>([]);
+  const [trainingData, setTrainingData] = useState('');
+
+  // Section 3: Device UI Description
+  const [uiComponents, setUiComponents] = useState<AppState['uiComponents']>([]);
+  const [operationalWorkflow, setOperationalWorkflow] = useState('');
+  const [labelingDocs, setLabelingDocs] = useState('');
+
+  // Section 4: Known Use Problems
+  const [knownProblems, setKnownProblems] = useState<AppState['knownProblems']>([]);
+  const [designResponse, setDesignResponse] = useState('');
+
+  // Section 5: Risk Analysis
+  const [hazards, setHazards] = useState<AppState['hazards']>([]);
+
+  // Section 6: Preliminary Analyses
+  const [taskAnalyses, setTaskAnalyses] = useState<AppState['taskAnalyses']>([]);
+  const [heuristicFindings, setHeuristicFindings] = useState<AppState['heuristicFindings']>([]);
+  const [expertReviews, setExpertReviews] = useState<AppState['expertReviews']>([]);
+  const [formativeEvals, setFormativeEvals] = useState<AppState['formativeEvals']>([]);
+  const [designMods, setDesignMods] = useState('');
+
+  // Section 7: Critical Tasks
+  const [criticalTasks, setCriticalTasks] = useState<AppState['criticalTasks']>([]);
+
+  // Section 8: Validation Testing
+  const [testEnvironment, setTestEnvironment] = useState('');
+  const [participants, setParticipants] = useState<AppState['participants']>([]);
+  const [taskPerformance, setTaskPerformance] = useState<AppState['taskPerformance']>([]);
+
+  // Section 9: Documentation
+  const [docChecklist, setDocChecklist] = useState<AppState['docChecklist']>({
+    ifu: false,
+    userManual: false,
+    quickStart: false,
+    packageInsert: false,
+    trainingMaterials: false,
+    riskAnalysis: false,
+    taskAnalysis: false,
+    formativeEval: false,
+    validationProtocol: false,
+    dataForms: false,
+    participantDemo: false,
+    testResults: false
+  });
+  const [docNotes, setDocNotes] = useState('');
+
+  // Load data on mount
   useEffect(() => {
-    const saved = loadFromStorage('usability-report')
-    if (saved) {
-      setProjectName(saved.projectName || '')
-      setSections(saved.sections || sections)
-      setLastSaved(saved.lastSaved || null)
+    const loadedData = loadFromLocalStorage();
+    if (loadedData) {
+      setProjectName(loadedData.projectName || '');
+      setDeviceName(loadedData.deviceName || '');
+      setSafetyStatement(loadedData.safetyStatement || '');
+      setProcessSummary(loadedData.processSummary || '');
+      setResidualRisk(loadedData.residualRisk || '');
+      setUserGroups(loadedData.userGroups || []);
+      setUseEnvironments(loadedData.useEnvironments || []);
+      setTrainingData(loadedData.trainingData || '');
+      setUiComponents(loadedData.uiComponents || []);
+      setOperationalWorkflow(loadedData.operationalWorkflow || '');
+      setLabelingDocs(loadedData.labelingDocs || '');
+      setKnownProblems(loadedData.knownProblems || []);
+      setDesignResponse(loadedData.designResponse || '');
+      setHazards(loadedData.hazards || []);
+      setTaskAnalyses(loadedData.taskAnalyses || []);
+      setHeuristicFindings(loadedData.heuristicFindings || []);
+      setExpertReviews(loadedData.expertReviews || []);
+      setFormativeEvals(loadedData.formativeEvals || []);
+      setDesignMods(loadedData.designMods || '');
+      setCriticalTasks(loadedData.criticalTasks || []);
+      setTestEnvironment(loadedData.testEnvironment || '');
+      setParticipants(loadedData.participants || []);
+      setTaskPerformance(loadedData.taskPerformance || []);
+      setDocChecklist(
+        loadedData.docChecklist || {
+          ifu: false,
+          userManual: false,
+          quickStart: false,
+          packageInsert: false,
+          trainingMaterials: false,
+          riskAnalysis: false,
+          taskAnalysis: false,
+          formativeEval: false,
+          validationProtocol: false,
+          dataForms: false,
+          participantDemo: false,
+          testResults: false
+        }
+      );
+      setDocNotes(loadedData.docNotes || '');
+      setCompletedSections(loadedData.completedSections || []);
     }
-  }, [])
+  }, []);
 
+  // Auto-save every 30 seconds
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleSave()
-    }, 30000)
-    return () => clearTimeout(timer)
-  }, [sections, projectName])
+    const timer = setInterval(() => {
+      handleSave();
+    }, 30000);
+
+    return () => clearInterval(timer);
+  });
 
   const handleSave = () => {
-    const data = {
+    const appState: AppState = {
       projectName,
-      sections,
-      lastSaved: new Date().toISOString(),
+      deviceName,
+      safetyStatement,
+      processSummary,
+      residualRisk,
+      userGroups,
+      useEnvironments,
+      trainingData,
+      uiComponents,
+      operationalWorkflow,
+      labelingDocs,
+      knownProblems,
+      designResponse,
+      hazards,
+      taskAnalyses,
+      heuristicFindings,
+      expertReviews,
+      formativeEvals,
+      designMods,
+      criticalTasks,
+      testEnvironment,
+      participants,
+      taskPerformance,
+      docChecklist,
+      docNotes,
+      completedSections
+    };
+
+    saveToLocalStorage(appState);
+  };
+
+  const renderSection = () => {
+    switch (currentSection) {
+      case 1:
+        return (
+          <Section1
+            safetyStatement={safetyStatement}
+            setSafetyStatement={setSafetyStatement}
+            processSummary={processSummary}
+            setProcessSummary={setProcessSummary}
+            residualRisk={residualRisk}
+            setResidualRisk={setResidualRisk}
+          />
+        );
+      case 2:
+        return (
+          <Section2
+            userGroups={userGroups}
+            setUserGroups={setUserGroups}
+            useEnvironments={useEnvironments}
+            setUseEnvironments={setUseEnvironments}
+            trainingData={trainingData}
+            setTrainingData={setTrainingData}
+          />
+        );
+      case 3:
+        return (
+          <Section3
+            uiComponents={uiComponents}
+            setUiComponents={setUiComponents}
+            operationalWorkflow={operationalWorkflow}
+            setOperationalWorkflow={setOperationalWorkflow}
+            labelingDocs={labelingDocs}
+            setLabelingDocs={setLabelingDocs}
+          />
+        );
+      case 4:
+        return (
+          <Section4
+            knownProblems={knownProblems}
+            setKnownProblems={setKnownProblems}
+            designResponse={designResponse}
+            setDesignResponse={setDesignResponse}
+          />
+        );
+      case 5:
+        return <Section5 hazards={hazards} setHazards={setHazards} />;
+      case 6:
+        return (
+          <Section6
+            taskAnalyses={taskAnalyses}
+            setTaskAnalyses={setTaskAnalyses}
+            heuristicFindings={heuristicFindings}
+            setHeuristicFindings={setHeuristicFindings}
+            expertReviews={expertReviews}
+            setExpertReviews={setExpertReviews}
+            formativeEvals={formativeEvals}
+            setFormativeEvals={setFormativeEvals}
+            designMods={designMods}
+            setDesignMods={setDesignMods}
+          />
+        );
+      case 7:
+        return <Section7 criticalTasks={criticalTasks} setCriticalTasks={setCriticalTasks} />;
+      case 8:
+        return (
+          <Section8
+            testEnvironment={testEnvironment}
+            setTestEnvironment={setTestEnvironment}
+            participants={participants}
+            setParticipants={setParticipants}
+            taskPerformance={taskPerformance}
+            setTaskPerformance={setTaskPerformance}
+            criticalTasks={criticalTasks}
+          />
+        );
+      case 9:
+        return (
+          <Section9
+            docChecklist={docChecklist}
+            setDocChecklist={setDocChecklist}
+            docNotes={docNotes}
+            setDocNotes={setDocNotes}
+          />
+        );
+      case 10:
+        return (
+          <Section10
+            appState={{
+              projectName,
+              deviceName,
+              safetyStatement,
+              processSummary,
+              residualRisk,
+              userGroups,
+              useEnvironments,
+              trainingData,
+              uiComponents,
+              operationalWorkflow,
+              labelingDocs,
+              knownProblems,
+              designResponse,
+              hazards,
+              taskAnalyses,
+              heuristicFindings,
+              expertReviews,
+              formativeEvals,
+              designMods,
+              criticalTasks,
+              testEnvironment,
+              participants,
+              taskPerformance,
+              docChecklist,
+              docNotes,
+              completedSections
+            }}
+          />
+        );
+      default:
+        return <div>Select a section</div>;
     }
-    if (saveToStorage('usability-report', data)) {
-      setLastSaved(data.lastSaved)
-    }
-  }
-
-  const updateField = (field: string, value: string) => {
-    setSections(prev => prev.map(s =>
-      s.id === currentSection
-        ? { ...s, fields: { ...s.fields, [field]: value } }
-        : s
-    ))
-  }
-
-  const getField = (field: string) => {
-    const section = sections.find(s => s.id === currentSection)
-    return section?.fields[field] || ''
-  }
-
-  const toggleComplete = () => {
-    setSections(prev => prev.map(s =>
-      s.id === currentSection
-        ? { ...s, completed: !s.completed }
-        : s
-    ))
-  }
-
-  const exportToJSON = () => {
-    const data = {
-      projectName,
-      sections,
-      exportedAt: new Date().toISOString(),
-    }
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${projectName || 'usability-report'}.json`
-    a.click()
-  }
-
-  const exportToMarkdown = () => {
-    let md = `# ${projectName || 'Usability Report'}\n\n`
-    md += `**Generated:** ${new Date().toLocaleString()}\n\n---\n\n`
-    sections.forEach(section => {
-      md += `## ${section.title}\n\n`
-      md += `**Status:** ${section.completed ? '✅ Complete' : '⏳ In Progress'}\n\n`
-      Object.entries(section.fields).forEach(([key, value]) => {
-        md += `### ${key}\n\n${value}\n\n`
-      })
-      md += `---\n\n`
-    })
-    const blob = new Blob([md], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${projectName || 'usability-report'}.md`
-    a.click()
-  }
-
-  const completedCount = sections.filter(s => s.completed).length
-  const progress = (completedCount / sections.length) * 100
-  const currentSectionData = sections.find(s => s.id === currentSection)
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <FileText className="w-8 h-8 text-blue-600" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">FDA Usability Report</h1>
-                <p className="text-sm text-gray-500">Human Factors Validation</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              {lastSaved && (
-                <span className="text-sm text-gray-500">
-                  Saved: {new Date(lastSaved).toLocaleTimeString()}
-                </span>
-              )}
-              <button
-                onClick={handleSave}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-blue-600 text-white p-4 shadow-lg no-print sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden p-2 hover:bg-blue-700 rounded-lg transition"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <Save className="w-4 h-4" />
-                <span>Save</span>
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-xl lg:text-2xl font-bold">FDA HF and Usability Generator</h1>
+              <p className="text-xs lg:text-sm text-blue-100">
+                IEC 62366-1 / FDA-2011-D-0469 Compliant
+              </p>
             </div>
+          </div>
+          <div className="hidden sm:block text-right">
+            <input
+              type="text"
+              placeholder="Project Name"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              className="px-3 py-1 rounded-lg text-gray-800 mb-1 w-48 text-sm focus:ring-2 focus:ring-blue-300"
+            />
+            <input
+              type="text"
+              placeholder="Device Name"
+              value={deviceName}
+              onChange={(e) => setDeviceName(e.target.value)}
+              className="px-3 py-1 rounded-lg text-gray-800 w-48 text-sm focus:ring-2 focus:ring-blue-300"
+            />
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-12 gap-8">
-          <aside className="col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sticky top-4">
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Project Name
-                </label>
-                <input
-                  type="text"
-                  value={projectName}
-                  onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="Enter project name..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+      <div className="flex max-w-7xl mx-auto">
+        {/* Sidebar */}
+        <Sidebar
+          currentSection={currentSection}
+          setCurrentSection={setCurrentSection}
+          completedSections={completedSections}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">Progress</span>
-                  <span className="text-sm text-gray-500">{completedCount}/10</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
+        {/* Main Content */}
+        <main className="flex-1 p-4 lg:p-8 overflow-auto">
+          {renderSection()}
 
-              <nav className="space-y-1">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => setCurrentSection(section.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center justify-between ${
-                      currentSection === section.id
-                        ? 'bg-blue-50 text-blue-700 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="text-sm">{section.id}. {section.title}</span>
-                    {section.completed && (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    )}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
-                <button
-                  onClick={exportToJSON}
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export JSON</span>
-                </button>
-                <button
-                  onClick={exportToMarkdown}
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export Markdown</span>
-                </button>
-              </div>
-            </div>
-          </aside>
-
-          <main className="col-span-9">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Section {currentSection}: {currentSectionData?.title}
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Complete all required fields for this section
-                  </p>
-                </div>
-                <button
-                  onClick={toggleComplete}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                    currentSectionData?.completed
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {currentSectionData?.completed ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Completed</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="w-4 h-4" />
-                      <span>Mark Complete</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {currentSection === 1 && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Safety and Effectiveness Statement
-                      </label>
-                      <textarea
-                        value={getField('safetyStatement')}
-                        onChange={(e) => updateField('safetyStatement', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-                        placeholder="The device has been found to be safe and effective for the intended users, uses and use environments..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        HFE/UE Process Summary
-                      </label>
-                      <textarea
-                        value={getField('processSummary')}
-                        onChange={(e) => updateField('processSummary', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-                        placeholder="Brief summary of HFE/UE processes conducted..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Residual Risk Discussion
-                      </label>
-                      <textarea
-                        value={getField('residualRisk')}
-                        onChange={(e) => updateField('residualRisk', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[150px]"
-                        placeholder="Discussion of any remaining use-related risks..."
-                      />
-                    </div>
-                  </>
-                )}
-
-                {currentSection === 2 && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Intended User Populations
-                      </label>
-                      <textarea
-                        value={getField('userPopulations')}
-                        onChange={(e) => updateField('userPopulations', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-                        placeholder="Describe the intended user populations..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Use Environments
-                      </label>
-                      <textarea
-                        value={getField('useEnvironments')}
-                        onChange={(e) => updateField('useEnvironments', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-                        placeholder="Describe where the device will be used..."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Training
-                      </label>
-                      <textarea
-                        value={getField('training')}
-                        onChange={(e) => updateField('training', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"
-                        placeholder="Describe expected training for users..."
-                      />
-                    </div>
-                  </>
-                )}
-
-                {currentSection > 2 && (
-                  <div className="text-center py-12">
-                    <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      Section {currentSection}: {currentSectionData?.title}
-                    </h3>
-                    <p className="text-gray-500 mb-6">
-                      This is a simplified MVP. Full form fields for this section will be added in the next version.
-                    </p>
-                    <textarea
-                      value={getField('notes')}
-                      onChange={(e) => updateField('notes', e.target.value)}
-                      className="w-full max-w-2xl mx-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[200px]"
-                      placeholder="Enter notes for this section..."
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-gray-200 flex items-center justify-between">
-                <button
-                  onClick={() => setCurrentSection(Math.max(1, currentSection - 1))}
-                  disabled={currentSection === 1}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  ← Previous
-                </button>
-                <button
-                  onClick={() => setCurrentSection(Math.min(10, currentSection + 1))}
-                  disabled={currentSection === 10}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next →
-                </button>
-              </div>
-            </div>
-          </main>
-        </div>
+          {/* Save Button */}
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={handleSave}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition shadow-md"
+            >
+              💾 Save Now
+            </button>
+          </div>
+        </main>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
