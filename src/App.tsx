@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AppState } from './types';
 import { saveToLocalStorage, loadFromLocalStorage } from './utils/storage';
 import { Sidebar } from './components/Sidebar';
